@@ -1,0 +1,180 @@
+[
+  {
+    "input": "통계",
+    "expected": "stats",
+    "response": {
+      "version": "2.0",
+      "template": {
+        "outputs": [
+          {
+            "simpleText": {
+              "text": "📊 메모 통계\n\n📈 전체: 6개\n📅 오늘: 5개\n📆 이번주: 6개\n🗓️ 이번달: 6개\n\n━━━━━━━━━━━━━━━\n📂 카테고리별\n📌 기타: 5개\n📺 영상: 1개"
+            }
+          }
+        ],
+        "quickReplies": [
+          {
+            "label": "오늘 정리",
+            "action": "message",
+            "messageText": "오늘 정리"
+          },
+          {
+            "label": "이번주 정리",
+            "action": "message",
+            "messageText": "이번주 정리"
+          },
+          {
+            "label": "영상 정리",
+            "action": "message",
+            "messageText": "영상 정리"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "input": "영상 정리",
+    "expected": "summary + category",
+    "response": {
+      "version": "2.0",
+      "template": {
+        "outputs": [
+          {
+            "listCard": {
+              "header": {
+                "title": "📊 영상 메모 (1건)"
+              },
+              "items": [
+                {
+                  "title": "📺 - YouTube",
+                  "description": "영상 • 4시간 전",
+                  "link": {
+                    "web": "https://youtube.com/watch?v=abc123"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "quickReplies": [
+          {
+            "label": "오늘 정리",
+            "action": "message",
+            "messageText": "오늘 정리"
+          },
+          {
+            "label": "통계",
+            "action": "message",
+            "messageText": "통계"
+          },
+          {
+            "label": "검색",
+            "action": "message",
+            "messageText": "검색 "
+          }
+        ]
+      }
+    }
+  },
+  {
+    "input": "어제 정리",
+    "expected": "summary + period yesterday",
+    "response": {
+      "version": "2.0",
+      "template": {
+        "outputs": [
+          {
+            "listCard": {
+              "header": {
+                "title": "📊 어제 메모 (1건)"
+              },
+              "items": [
+                {
+                  "title": "📺 - YouTube",
+                  "description": "영상 • 4시간 전",
+                  "link": {
+                    "web": "https://youtube.com/watch?v=abc123"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "quickReplies": [
+          {
+            "label": "오늘 정리",
+            "action": "message",
+            "messageText": "오늘 정리"
+          },
+          {
+            "label": "통계",
+            "action": "message",
+            "messageText": "통계"
+          },
+          {
+            "label": "검색",
+            "action": "message",
+            "messageText": "검색 "
+          }
+        ]
+      }
+    }
+  },
+  {
+    "input": "이번주 정리",
+    "expected": "summary + period week",
+    "response": {
+      "version": "2.0",
+      "template": {
+        "outputs": [
+          {
+            "listCard": {
+              "header": {
+                "title": "📊 이번 주 메모 (6건)"
+              },
+              "items": [
+                {
+                  "title": "📌 AI가 메모를 정리할 예정",
+                  "description": "기타 • 방금"
+                },
+                {
+                  "title": "📌 AI가 메모를 정리하는 내용",
+                  "description": "기타 • 방금"
+                },
+                {
+                  "title": "📌 오늘메모를마지막에ai가정리",
+                  "description": "기타 • 2시간 전"
+                },
+                {
+                  "title": "📌 오늘메모를마지막에ai가정리",
+                  "description": "기타 • 2시간 전"
+                },
+                {
+                  "title": "📌 hello world",
+                  "description": "기타 • 2시간 전"
+                }
+              ]
+            }
+          }
+        ],
+        "quickReplies": [
+          {
+            "label": "오늘 정리",
+            "action": "message",
+            "messageText": "오늘 정리"
+          },
+          {
+            "label": "통계",
+            "action": "message",
+            "messageText": "통계"
+          },
+          {
+            "label": "검색",
+            "action": "message",
+            "messageText": "검색 "
+          }
+        ]
+      }
+    }
+  }
+]

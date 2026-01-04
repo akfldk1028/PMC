@@ -1,0 +1,150 @@
+[
+  {
+    "input": "통계",
+    "expected": "stats",
+    "response": {
+      "version": "2.0",
+      "template": {
+        "outputs": [
+          {
+            "simpleText": {
+              "text": "📊 메모 통계\n\n📈 전체: 1개\n📅 오늘: 0개\n📆 이번주: 1개\n🗓️ 이번달: 1개\n\n━━━━━━━━━━━━━━━\n📂 카테고리별\n📌 기타: 1개"
+            }
+          }
+        ],
+        "quickReplies": [
+          {
+            "label": "오늘 정리",
+            "action": "message",
+            "messageText": "오늘 정리"
+          },
+          {
+            "label": "이번주 정리",
+            "action": "message",
+            "messageText": "이번주 정리"
+          },
+          {
+            "label": "영상 정리",
+            "action": "message",
+            "messageText": "영상 정리"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "input": "영상 정리",
+    "expected": "summary + category",
+    "response": {
+      "version": "2.0",
+      "template": {
+        "outputs": [
+          {
+            "simpleText": {
+              "text": "📭 영상 카테고리에 저장된 메모가 없습니다."
+            }
+          }
+        ],
+        "quickReplies": [
+          {
+            "label": "오늘 정리",
+            "action": "message",
+            "messageText": "오늘 정리"
+          },
+          {
+            "label": "통계",
+            "action": "message",
+            "messageText": "통계"
+          },
+          {
+            "label": "검색",
+            "action": "message",
+            "messageText": "검색 "
+          }
+        ]
+      }
+    }
+  },
+  {
+    "input": "어제 정리",
+    "expected": "summary + period yesterday",
+    "response": {
+      "version": "2.0",
+      "template": {
+        "outputs": [
+          {
+            "listCard": {
+              "header": {
+                "title": "📊 어제 메모 (1건)"
+              },
+              "items": [
+                {
+                  "title": "📌 hello",
+                  "description": "기타 • 23시간 전"
+                }
+              ]
+            }
+          }
+        ],
+        "quickReplies": [
+          {
+            "label": "오늘 정리",
+            "action": "message",
+            "messageText": "오늘 정리"
+          },
+          {
+            "label": "통계",
+            "action": "message",
+            "messageText": "통계"
+          },
+          {
+            "label": "검색",
+            "action": "message",
+            "messageText": "검색 "
+          }
+        ]
+      }
+    }
+  },
+  {
+    "input": "이번주 정리",
+    "expected": "summary + period week",
+    "response": {
+      "version": "2.0",
+      "template": {
+        "outputs": [
+          {
+            "listCard": {
+              "header": {
+                "title": "📊 이번 주 메모 (1건)"
+              },
+              "items": [
+                {
+                  "title": "📌 hello",
+                  "description": "기타 • 23시간 전"
+                }
+              ]
+            }
+          }
+        ],
+        "quickReplies": [
+          {
+            "label": "오늘 정리",
+            "action": "message",
+            "messageText": "오늘 정리"
+          },
+          {
+            "label": "통계",
+            "action": "message",
+            "messageText": "통계"
+          },
+          {
+            "label": "검색",
+            "action": "message",
+            "messageText": "검색 "
+          }
+        ]
+      }
+    }
+  }
+]

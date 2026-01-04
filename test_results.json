@@ -1,0 +1,121 @@
+[
+  {
+    "input": "오늘 정리",
+    "expected": "summary",
+    "response": {
+      "version": "2.0",
+      "template": {
+        "outputs": [
+          {
+            "listCard": {
+              "header": {
+                "title": "📊 오늘 메모 (4건)"
+              },
+              "items": [
+                {
+                  "title": "📌 AI가 메모를 정리하는 내용",
+                  "description": "기타 • 방금"
+                },
+                {
+                  "title": "📌 오늘메모를마지막에ai가정리",
+                  "description": "기타 • 1시간 전"
+                },
+                {
+                  "title": "📌 오늘메모를마지막에ai가정리",
+                  "description": "기타 • 1시간 전"
+                },
+                {
+                  "title": "📌 hello world",
+                  "description": "기타 • 1시간 전"
+                }
+              ]
+            }
+          }
+        ],
+        "quickReplies": [
+          {
+            "label": "오늘 정리",
+            "action": "message",
+            "messageText": "오늘 정리"
+          },
+          {
+            "label": "리마인더",
+            "action": "message",
+            "messageText": "리마인더"
+          },
+          {
+            "label": "검색",
+            "action": "message",
+            "messageText": "검색 "
+          }
+        ]
+      }
+    }
+  },
+  {
+    "input": "오늘메모를마지막에ai가정리",
+    "expected": "save",
+    "response": {
+      "version": "2.0",
+      "template": {
+        "outputs": [
+          {
+            "simpleText": {
+              "text": "✅ 📌 기타 저장 완료!\n\nAI가 메모를 정리할 예정"
+            }
+          }
+        ],
+        "quickReplies": [
+          {
+            "label": "오늘 정리",
+            "action": "message",
+            "messageText": "오늘 정리"
+          },
+          {
+            "label": "리마인더",
+            "action": "message",
+            "messageText": "리마인더"
+          },
+          {
+            "label": "검색",
+            "action": "message",
+            "messageText": "검색 "
+          }
+        ]
+      }
+    }
+  },
+  {
+    "input": "검색 맛집",
+    "expected": "search",
+    "response": {
+      "version": "2.0",
+      "template": {
+        "outputs": [
+          {
+            "simpleText": {
+              "text": "📭 '맛집' 관련 메모가 없습니다."
+            }
+          }
+        ],
+        "quickReplies": [
+          {
+            "label": "오늘 정리",
+            "action": "message",
+            "messageText": "오늘 정리"
+          },
+          {
+            "label": "리마인더",
+            "action": "message",
+            "messageText": "리마인더"
+          },
+          {
+            "label": "검색",
+            "action": "message",
+            "messageText": "검색 "
+          }
+        ]
+      }
+    }
+  }
+]

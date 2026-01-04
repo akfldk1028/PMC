@@ -1,0 +1,57 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/mcp_server.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb"
+      }
+    },
+    {
+      "src": "api/skill.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb"
+      }
+    },
+    {
+      "src": "api/cron.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/mcp",
+      "dest": "/api/mcp_server.py"
+    },
+    {
+      "src": "/seed",
+      "dest": "/api/mcp_server.py"
+    },
+    {
+      "src": "/skill",
+      "dest": "/api/skill.py"
+    },
+    {
+      "src": "/api/cron/reminders",
+      "dest": "/api/cron.py"
+    },
+    {
+      "src": "/api/cron/health",
+      "dest": "/api/cron.py"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/reminders",
+      "schedule": "0 9 * * *"
+    }
+  ],
+  "env": {
+    "DATABASE_PATH": "/tmp/memomate.db"
+  }
+}
