@@ -171,8 +171,9 @@ async def get_personalized_quick_replies(user_id: str) -> list:
         {"label": "오늘", "action": "message", "messageText": "오늘 정리"},
         {"label": "이번주", "action": "message", "messageText": "이번주 정리"},
     ] + dynamic_buttons + [
+        {"label": "삭제", "action": "message", "messageText": "메모 삭제"},
         {"label": "통계", "action": "message", "messageText": "통계"},
-        {"label": "리마인더", "action": "message", "messageText": "리마인더"}
+        {"label": "도움말", "action": "message", "messageText": "도움말"}
     ]
 
 
