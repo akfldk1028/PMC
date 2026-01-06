@@ -411,14 +411,56 @@ async def openai_classification(content: str, metadata: Optional[dict] = None) -
 async def classify_category_only(content: str, use_ai: bool = False) -> str:
     """카테고리만 분류 (원본 텍스트는 그대로 유지)
 
-    use_ai=False (기본): 첫 단어를 카테고리로
+    use_ai=False (기본): URL이면 플랫폼 기반, 아니면 첫 단어
     use_ai=True: AI가 분류
 
     예시:
+    - "https://youtube.com/..." → "영상" (플랫폼 기반)
     - "건축사 층고제한규정" → "건축사" (첫 단어)
     - "맛있는 파스타집" + AI → "맛집" (AI 분류)
     """
-    # 기본: 첫 단어를 카테고리로
+    # URL인 경우 플랫폼 기반 카테고리 분류
+    if content.strip().startswith(("http://", "https://", "www.")):
+        from .metadata import detect_platform
+        platform = detect_platform(content)
+
+        # 플랫폼 → 카테고리 매핑 (확장)
+        type_to_category = {
+            # 영상
+            "youtube": "영상", "instagram": "영상", "tiktok": "영상", "netflix": "영상",
+            "twitch": "영상", "vimeo": "영상",
+            # 음악
+            "spotify": "음악", "melon": "음악", "apple_music": "음악",
+            "soundcloud": "음악", "bugs": "음악",
+            # 여행
+            "airbnb": "여행", "booking": "여행", "yanolja": "여행",
+            "goodchoice": "여행", "agoda": "여행", "expedia": "여행",
+            # 맛집
+            "kakao_map": "맛집", "naver_map": "맛집", "mango_plate": "맛집", "diningcode": "맛집",
+            # 쇼핑
+            "coupang": "쇼핑", "musinsa": "쇼핑", "zigzag": "쇼핑",
+            "gmarket": "쇼핑", "11st": "쇼핑", "amazon": "쇼핑", "aliexpress": "쇼핑",
+            # 학습/개발
+            "inflearn": "학습", "udemy": "학습", "coursera": "학습", "class101": "학습",
+            "github": "학습", "gitlab": "학습", "stackoverflow": "학습",
+            "notion": "학습", "figma": "학습", "codepen": "학습",
+            "codesandbox": "학습", "replit": "학습", "huggingface": "학습", "kaggle": "학습",
+            # 읽을거리
+            "naver_blog": "읽을거리", "tistory": "읽을거리", "velog": "읽을거리",
+            "brunch": "읽을거리", "medium": "읽을거리", "substack": "읽을거리",
+            "news": "읽을거리",
+            # 기타 (정부/금융 등)
+            "gov": "기타", "hometax": "기타", "wetax": "기타", "gov24": "기타",
+            "bank": "기타", "card": "기타",
+            # SNS
+            "twitter": "기타", "facebook": "기타", "linkedin": "기타", "reddit": "기타",
+        }
+
+        if platform in type_to_category:
+            return type_to_category[platform]
+        return "링크"  # 알 수 없는 URL은 "링크" 카테고리
+
+    # 일반 텍스트: 첫 단어를 카테고리로
     words = content.split()
     first_word = words[0] if words else "기타"
 

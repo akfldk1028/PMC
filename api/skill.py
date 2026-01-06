@@ -145,8 +145,8 @@ def get_default_quick_replies() -> list:
         {"label": "이번주", "action": "message", "messageText": "이번주 정리"},
         {"label": "영상", "action": "message", "messageText": "영상 정리"},
         {"label": "맛집", "action": "message", "messageText": "맛집 정리"},
+        {"label": "삭제", "action": "message", "messageText": "메모 삭제"},
         {"label": "통계", "action": "message", "messageText": "통계"},
-        {"label": "리마인더", "action": "message", "messageText": "리마인더"},
         {"label": "도움말", "action": "message", "messageText": "도움말"}
     ]
 
@@ -210,6 +210,17 @@ def get_sub_page_quick_replies() -> list:
         {"label": "이번주", "action": "message", "messageText": "이번주 정리"},
         {"label": "통계", "action": "message", "messageText": "통계"},
         {"label": "리마인더", "action": "message", "messageText": "리마인더"}
+    ]
+
+
+def get_delete_quick_replies() -> list:
+    """삭제 옵션 QuickReplies - 기간별/카테고리별 삭제"""
+    return [
+        {"label": "← 홈", "action": "message", "messageText": "홈"},
+        {"label": "오늘 삭제", "action": "message", "messageText": "오늘 메모 삭제"},
+        {"label": "영상 삭제", "action": "message", "messageText": "영상 삭제"},
+        {"label": "맛집 삭제", "action": "message", "messageText": "맛집 삭제"},
+        {"label": "전체 삭제", "action": "message", "messageText": "전체 메모 삭제"}
     ]
 
 
@@ -556,11 +567,12 @@ async def handle_search(user_id: str, keyword: str):
 async def handle_delete(user_id: str, keyword: str = "", memo_id: str = ""):
     """삭제 처리 - BasicCard로 모던하게"""
     sub_qr = get_sub_page_quick_replies()
+    delete_qr = get_delete_quick_replies()
 
     if not keyword and not memo_id:
         return JSONResponse(create_simple_response(
-            "삭제할 메모를 검색어로 알려주세요.\n예: 삭제 유튜브",
-            quick_replies=sub_qr
+            "어떤 메모를 삭제할까요?",
+            quick_replies=delete_qr
         ))
 
     # memo_id가 있으면 직접 삭제, 없으면 키워드 검색
@@ -769,16 +781,16 @@ def handle_help():
 ────────────────────
 
 메모 저장
-아무 텍스트나 URL을 보내면 자동 저장
-"내일 3시 회의" 형식으로 리마인더 설정
+· 첫 단어 = 카테고리! (테니스 연습 → 테니스)
+· URL → 플랫폼별 자동 분류 (유튜브→영상)
+· "내일 3시 회의" → 리마인더 설정
 
 메모 정리
 오늘 정리 / 이번주 정리
 영상 정리 / 맛집 정리
 
 검색·삭제
-검색 유튜브
-삭제 유튜브
+검색 유튜브 / 삭제 유튜브
 
 기타
 통계 / 리마인더"""

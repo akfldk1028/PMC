@@ -97,11 +97,15 @@ URL_PATTERN = re.compile(r'https?://[^\s<>"{}|\\^`\[\]]+')
 
 
 def extract_youtube_id(url: str) -> Optional[str]:
-    """YouTube URL에서 video_id 추출"""
+    """YouTube URL에서 video_id 추출 (shorts, watch, embed 등 모든 형식 지원)"""
     if "youtu.be" in url:
         path = url.split("youtu.be/")[-1]
         return path.split("?")[0].split("/")[0]
     elif "youtube.com" in url:
+        # /shorts/xxx 형식 (YouTube Shorts)
+        match = re.search(r"/shorts/([^/?]+)", url)
+        if match:
+            return match.group(1)
         # /watch?v=xxx 형식
         match = re.search(r"v=([^&]+)", url)
         if match:
@@ -110,6 +114,39 @@ def extract_youtube_id(url: str) -> Optional[str]:
         match = re.search(r"(?:embed|v)/([^/?]+)", url)
         if match:
             return match.group(1)
+        # /live/xxx 형식 (YouTube Live)
+        match = re.search(r"/live/([^/?]+)", url)
+        if match:
+            return match.group(1)
+    return None
+
+
+async def fetch_oembed_metadata(url: str) -> Optional[dict]:
+    """open.iframe.ly oEmbed API로 메타데이터 가져오기 (1600+ 도메인 지원)
+
+    서버리스 환경에서 봇 차단 우회, 모든 URL에 대해 안정적인 메타데이터 추출
+    https://open.iframe.ly/api/oembed?url=...&origin=...
+    """
+    try:
+        from urllib.parse import quote
+        # origin: GitHub 프로젝트명 (open.iframe.ly 정책)
+        oembed_url = f"https://open.iframe.ly/api/oembed?url={quote(url, safe='')}&origin=memomate-pmc"
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(oembed_url, timeout=8.0)
+
+            if response.status_code == 200:
+                data = response.json()
+                return {
+                    "title": data.get("title", ""),
+                    "description": data.get("description", ""),
+                    "thumbnail_url": data.get("thumbnail_url", ""),
+                    "provider_name": data.get("provider_name", ""),
+                    "author_name": data.get("author_name", ""),
+                }
+    except Exception as e:
+        print(f"oEmbed API error: {e}")
+
     return None
 
 
@@ -195,24 +232,56 @@ def has_url(text: str) -> bool:
 
 
 async def extract_metadata(url: str) -> dict:
-    """URL에서 메타데이터 추출 (모든 사이트 지원, 영상 썸네일 개선)"""
+    """URL에서 메타데이터 추출 (oEmbed API 우선, 실패 시 직접 파싱)
+
+    1단계: open.iframe.ly oEmbed API (1600+ 도메인, 봇 차단 우회)
+    2단계: 직접 OG 태그 파싱 (폴백)
+    3단계: 기본 썸네일/favicon (최후 폴백)
+    """
 
     platform = detect_platform(url)
 
-    # YouTube 특수 처리 - 직접 썸네일 URL 생성 (더 안정적)
+    # YouTube 특수 처리 - 직접 썸네일 URL 생성 (가장 안정적)
     youtube_thumbnail = None
     youtube_id = None
     if platform == "youtube":
         youtube_id = extract_youtube_id(url)
         if youtube_id:
-            # hqdefault는 항상 존재 (maxresdefault는 없을 수 있음)
             youtube_thumbnail = f"https://i.ytimg.com/vi/{youtube_id}/hqdefault.jpg"
 
+    # ========== 1단계: oEmbed API 시도 (가장 안정적) ==========
+    oembed_data = await fetch_oembed_metadata(url)
+    if oembed_data and oembed_data.get("title"):
+        # oEmbed 성공!
+        thumbnail = oembed_data.get("thumbnail_url", "")
+
+        # YouTube는 직접 생성한 썸네일이 더 안정적
+        if platform == "youtube" and youtube_thumbnail:
+            thumbnail = youtube_thumbnail
+
+        # 썸네일 폴백
+        if not thumbnail:
+            thumbnail = get_default_thumbnail(platform) or get_favicon_url(url)
+
+        result = {
+            "title": oembed_data.get("title", ""),
+            "description": oembed_data.get("description", ""),
+            "image": thumbnail,
+            "thumbnail": thumbnail,
+            "site_name": oembed_data.get("provider_name", "") or get_domain_name(url),
+            "url": url,
+            "type": platform
+        }
+        if youtube_id:
+            result["video_id"] = youtube_id
+        return result
+
+    # ========== 2단계: 직접 OG 태그 파싱 (oEmbed 실패 시) ==========
     try:
         async with httpx.AsyncClient(follow_redirects=True) as client:
             response = await client.get(
                 url,
-                timeout=10.0,  # 느린 사이트 대응
+                timeout=10.0,
                 headers={
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -232,69 +301,54 @@ async def extract_metadata(url: str) -> dict:
             title_tag = soup.find("title")
             desc_tag = soup.find("meta", attrs={"name": "description"})
 
-            # 이미지 URL 정규화 (상대 경로 → 절대 경로)
+            # 이미지 URL 정규화
             raw_image = _get_content(og_image)
             image_url = normalize_image_url(raw_image, url)
 
-            # YouTube일 때 og:image가 없거나 이상하면 직접 생성한 썸네일 사용
+            # YouTube 썸네일 우선
             if platform == "youtube" and youtube_thumbnail:
                 if not image_url or "ytimg.com" not in image_url:
                     image_url = youtube_thumbnail
 
-            # 이미지가 없으면 폴백: 플랫폼 기본 → favicon
-            final_image = image_url
-            if not final_image:
-                final_image = get_default_thumbnail(platform)
-            if not final_image:
-                final_image = get_favicon_url(url)
+            # 이미지 폴백
+            final_image = image_url or get_default_thumbnail(platform) or get_favicon_url(url)
 
-            # 제목 폴백: OG → title 태그 → 도메인명
-            title = _get_content(og_title) or _get_text(title_tag)
-            if not title:
-                title = get_domain_name(url)
+            # 제목 폴백
+            title = _get_content(og_title) or _get_text(title_tag) or get_domain_name(url)
 
-            # 사이트명 폴백: OG → 도메인명
-            site_name = _get_content(og_site_name)
-            if not site_name:
-                site_name = get_domain_name(url)
+            # 사이트명 폴백
+            site_name = _get_content(og_site_name) or get_domain_name(url)
 
-            # 결과 구성
             result = {
                 "title": title or "",
                 "description": _get_content(og_description) or _get_content(desc_tag) or "",
                 "image": final_image or "",
-                "thumbnail": final_image or "",  # 호환성: image와 thumbnail 둘 다
+                "thumbnail": final_image or "",
                 "site_name": site_name or "",
                 "url": url,
                 "type": platform
             }
-
-            # YouTube video_id 추가 (필요시 활용)
             if youtube_id:
                 result["video_id"] = youtube_id
-
             return result
 
     except Exception as e:
         print(f"Metadata extraction error: {e}")
-        # 실패해도 썸네일은 최대한 보장
-        fallback_image = None
-        if youtube_thumbnail:
-            fallback_image = youtube_thumbnail
-        elif platform:
-            fallback_image = get_default_thumbnail(platform)
-        if not fallback_image:
-            fallback_image = get_favicon_url(url)
 
-        result = {
-            "url": url,
-            "type": platform,
-            "image": fallback_image or "",
-            "thumbnail": fallback_image or ""
-        }
-        if youtube_id:
-            result["video_id"] = youtube_id
-        return result
+    # ========== 3단계: 최후 폴백 ==========
+    fallback_image = youtube_thumbnail or get_default_thumbnail(platform) or get_favicon_url(url)
+    result = {
+        "title": get_domain_name(url),
+        "description": "",
+        "url": url,
+        "type": platform,
+        "image": fallback_image or "",
+        "thumbnail": fallback_image or "",
+        "site_name": get_domain_name(url)
+    }
+    if youtube_id:
+        result["video_id"] = youtube_id
+    return result
 
 
 def detect_platform(url: str) -> str:
