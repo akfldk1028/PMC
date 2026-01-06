@@ -801,8 +801,7 @@ def handle_help():
         quick_replies=[
             {"label": "오늘", "action": "message", "messageText": "오늘 정리"},
             {"label": "이번주", "action": "message", "messageText": "이번주 정리"},
-            {"label": "영상", "action": "message", "messageText": "영상 정리"},
-            {"label": "맛집", "action": "message", "messageText": "맛집 정리"},
+            {"label": "삭제", "action": "message", "messageText": "메모 삭제"},
             {"label": "통계", "action": "message", "messageText": "통계"},
             {"label": "리마인더", "action": "message", "messageText": "리마인더"}
         ]
