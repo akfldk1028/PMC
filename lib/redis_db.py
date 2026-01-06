@@ -369,6 +369,27 @@ async def get_memo_by_id(user_id: str, memo_id: str) -> dict:
     return json.loads(memo_data)
 
 
+async def get_memo_by_short_id(user_id: str, short_id: str) -> dict:
+    """짧은 ID (8자리)로 메모 조회 - UUID prefix 매칭"""
+    if not short_id or len(short_id) < 4:
+        return None
+
+    short_id_lower = short_id.lower()
+
+    # 최근 메모 100개에서 검색 (prefix 매칭)
+    memo_ids = await redis_command("ZREVRANGE", f"user:{user_id}:memos", 0, 99)
+
+    if not memo_ids:
+        return None
+
+    # prefix가 일치하는 메모 찾기
+    for memo_id in memo_ids:
+        if memo_id.lower().startswith(short_id_lower):
+            return await get_memo_by_id(user_id, memo_id)
+
+    return None
+
+
 # ============ 사용자 함수 ============
 
 async def get_or_create_user(kakao_id: str) -> dict:

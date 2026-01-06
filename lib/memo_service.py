@@ -18,7 +18,7 @@ from .redis_db import (
     get_user_stats,
     get_or_create_user as db_get_or_create_user
 )
-from .classifier import get_category_emoji, analyze_memo, classify_intent
+from .classifier import get_category_emoji, analyze_memo, classify_intent, classify_category_only
 from .metadata import extract_metadata, extract_urls
 from .datetime_parser import extract_reminder_info, format_reminder_time
 
@@ -126,22 +126,27 @@ async def service_save_memo(
     content: str,
     category: str = None,
     summary: str = None,
-    tags: List[str] = None
+    tags: List[str] = None,
+    use_ai: bool = False  # 기본: AI 사용 안 함 (원본 그대로 저장)
 ) -> dict:
-    """메모 저장 서비스 (AI 분류 포함)"""
+    """메모 저장 서비스
+
+    use_ai=False (기본): 원본 그대로 저장
+    use_ai=True: AI 분류/요약 사용 ("요약 저장" 명령 시)
+    """
 
     # URL 추출
     urls = extract_urls(content)
     memo_type = "url" if urls else "text"
 
-    # 메타데이터 추출
+    # 메타데이터 추출 (URL이면 OG태그는 가져옴 - 제목/썸네일용)
     metadata = {}
     if urls:
         metadata = await extract_metadata(urls[0])
         metadata["url"] = urls[0]
 
-    # AI 분류 (카테고리/태그/요약이 없으면)
-    if not category or not summary:
+    # AI 분류 (use_ai=True일 때만)
+    if use_ai and (not category or not summary):
         analysis = await analyze_memo(content, metadata)
         if not category:
             category = analysis.get("category", "기타")
@@ -149,6 +154,18 @@ async def service_save_memo(
             summary = analysis.get("summary", content[:30])
         if not tags:
             tags = analysis.get("tags", [])
+    else:
+        # 기본 저장: 원본 그대로, 카테고리는 AI 분류
+        if not category:
+            category = await classify_category_only(content)
+        if not summary:
+            # URL이면 메타데이터 제목 사용, 아니면 원본 그대로
+            if metadata.get("title"):
+                summary = metadata["title"][:50]
+            else:
+                summary = content[:50]  # 원본 그대로 (50자까지)
+        if not tags:
+            tags = []
 
     # 할일 카테고리면 리마인더 정보 추출
     reminder_at = None

@@ -1,6 +1,8 @@
 """
-ChatNote 공통 상수 정의
+챗노트 (ChatNote) 공통 상수 정의
 중복 방지를 위한 통합 상수 모듈
+
+* 채널 URL: http://pf.kakao.com/_IHxegn
 """
 
 # 카테고리별 이모지 매핑 (통합 상수)

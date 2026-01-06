@@ -124,6 +124,11 @@ def fast_rule_classify(message: str) -> dict | None:
         "홈": {"intent": "help", "confidence": 1.0},
         "사용법": {"intent": "help", "confidence": 1.0},
         "?": {"intent": "help", "confidence": 1.0},
+        # AI 분류 저장 (사용자 요청 시에만 AI 사용)
+        "AI 분류": {"intent": "save_with_ai", "confidence": 1.0},
+        "ai 분류": {"intent": "save_with_ai", "confidence": 1.0},
+        "요약 저장": {"intent": "save_with_ai", "confidence": 1.0},
+        "분류 저장": {"intent": "save_with_ai", "confidence": 1.0},
         # 기간별 정리
         "오늘 정리": {"intent": "summary", "confidence": 1.0, "period": "today"},
         "오늘정리": {"intent": "summary", "confidence": 1.0, "period": "today"},
@@ -188,9 +193,15 @@ def fast_rule_classify(message: str) -> dict | None:
             return {"intent": "search", "confidence": 0.9, "keyword": keyword}
 
     # "삭제 XXX" 또는 "XXX 삭제" 또는 "XXX 지워"
+    # UUID 패턴이면 memo_id로 처리 (상세보기에서 삭제 버튼 클릭 시)
+    import re
+    uuid_pattern = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', re.I)
+
     if msg.startswith("삭제 "):
         keyword = msg[3:].strip()
         if keyword:
+            if uuid_pattern.match(keyword):
+                return {"intent": "delete", "confidence": 1.0, "memo_id": keyword}
             return {"intent": "delete", "confidence": 1.0, "keyword": keyword}
     if msg.endswith(" 삭제"):
         keyword = msg[:-3].strip()
@@ -201,12 +212,29 @@ def fast_rule_classify(message: str) -> dict | None:
         if keyword:
             return {"intent": "delete", "confidence": 0.9, "keyword": keyword}
 
+    # 상세 보기 패턴: "상세 {memo_id}" 또는 "#{short_id}"
+    if msg.startswith("상세 "):
+        memo_id = msg[3:].strip()
+        if memo_id:
+            return {"intent": "detail", "confidence": 1.0, "memo_id": memo_id}
+
+    # 짧은 ID 패턴: "#a448275d" (8자리)
+    if msg.startswith("#") and len(msg) == 9:
+        short_id = msg[1:]  # # 제거
+        if all(c in "0123456789abcdef" for c in short_id.lower()):
+            return {"intent": "detail", "confidence": 1.0, "short_id": short_id}
+
     # URL은 무조건 저장 (AI 호출 불필요)
     if msg_lower.startswith(("http://", "https://", "www.")):
         return {"intent": "save", "confidence": 1.0, "reasoning": "URL 감지"}
 
-    # 그 외는 None 반환 → AI로 위임
-    return None
+    # "AI:" 접두사 → AI 분류 저장 (사용자 명시적 요청)
+    if msg.startswith("AI:") or msg.startswith("ai:") or msg.startswith("AI ") or msg.startswith("ai "):
+        content = msg[3:].strip() if msg[2] == ":" else msg[2:].strip()
+        return {"intent": "save_with_ai", "confidence": 1.0, "content": content, "reasoning": "AI 분류 요청"}
+
+    # 그 외는 일반 저장 (원본 그대로)
+    return {"intent": "save", "confidence": 1.0, "reasoning": "기본 저장"}
 
 
 async def classify_intent(message: str) -> dict:
@@ -317,10 +345,10 @@ CLASSIFICATION_PROMPT = """다음 메모를 분석해서 JSON으로 반환해줘
 - 여행: 여행지, 호텔, 항공, 관광, 숙소
 - 할일: 해야 할 일, 일정, 예약, 약속, 시간 포함 메모
 - 아이디어: 아이디어, 기획, 영감
-- 학습: 강의, 튜토리얼, 교육, 코딩, 공부
+- 학습: 강의, 튜토리얼, 교육, 코딩, 공부, GitHub, GitLab, 개발, 프로그래밍, 기술문서, API, 라이브러리
 - 건강: 운동, 헬스, 다이어트, 건강관리
-- 읽을거리: 블로그, 뉴스, 기사, 아티클
-- 기타: 위에 해당 안 되는 것"""
+- 읽을거리: 블로그, 뉴스, 기사, 아티클, Medium, 개인블로그
+- 기타: 위 카테고리에 명확히 해당하지 않는 것"""
 
 
 async def analyze_memo(content: str, metadata: Optional[dict] = None) -> dict:
@@ -380,6 +408,69 @@ async def openai_classification(content: str, metadata: Optional[dict] = None) -
     return None
 
 
+async def classify_category_only(content: str, use_ai: bool = False) -> str:
+    """카테고리만 분류 (원본 텍스트는 그대로 유지)
+
+    use_ai=False (기본): 첫 단어를 카테고리로
+    use_ai=True: AI가 분류
+
+    예시:
+    - "건축사 층고제한규정" → "건축사" (첫 단어)
+    - "맛있는 파스타집" + AI → "맛집" (AI 분류)
+    """
+    # 기본: 첫 단어를 카테고리로
+    words = content.split()
+    first_word = words[0] if words else "기타"
+
+    if not use_ai:
+        return first_word
+
+    # AI 분류 요청 시
+    if not OPENAI_API_KEY:
+        return first_word
+
+    prompt = f"""메모 카테고리 분류.
+
+메모: {content}
+
+기본 카테고리: 영상, 음악, 맛집, 쇼핑, 여행, 할일, 아이디어, 학습, 건강, 읽을거리
+
+규칙:
+1. 기본 카테고리에 해당하면 그걸로
+2. 전문/특수 분야면 첫 단어나 핵심 주제 (예: 건축사, 법률, 의료, 회계, 부동산)
+3. 애매하면 메모의 첫 단어
+
+한 단어만 답변:"""
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://api.openai.com/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {OPENAI_API_KEY}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": "gpt-4o-mini",
+                    "messages": [{"role": "user", "content": prompt}],
+                    "temperature": 0.1,
+                    "max_tokens": 20
+                },
+                timeout=5.0
+            )
+
+            if response.status_code == 200:
+                result = response.json()
+                category = result["choices"][0]["message"]["content"].strip()
+                return category
+
+    except Exception as e:
+        print(f"[Classifier] Category Error: {e}")
+
+    # 폴백: 첫 단어
+    return first_word
+
+
 def rule_based_classification(content: str, metadata: dict = None) -> dict:
     """규칙 기반 분류 (폴백용)"""
     content_lower = content.lower()
@@ -396,6 +487,7 @@ def rule_based_classification(content: str, metadata: dict = None) -> dict:
             "kakao_map": "맛집", "naver_map": "맛집", "mango_plate": "맛집",
             "coupang": "쇼핑", "musinsa": "쇼핑", "zigzag": "쇼핑",
             "inflearn": "학습", "udemy": "학습", "coursera": "학습",
+            "github": "학습", "gitlab": "학습", "stackoverflow": "학습",
             "naver_blog": "읽을거리", "tistory": "읽을거리", "velog": "읽을거리"
         }
 

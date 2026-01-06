@@ -31,10 +31,13 @@ from lib.metadata import extract_metadata, extract_urls
 # FastAPI 앱
 app = FastAPI(title="챗노트 MCP Server")
 
-# MCP 서버 정보
+# MCP 서버 정보 (2025-11-25 스펙 준수)
 SERVER_INFO = {
-    "name": "챗노트",
-    "version": "1.0.0"
+    "name": "chatnote",
+    "title": "챗노트 (ChatNote)",
+    "version": "1.0.0",
+    "description": "카카오톡 AI 스마트 메모 서비스. 텍스트, URL을 자동 분류하고 정리합니다.",
+    "websiteUrl": "http://pf.kakao.com/_IHxegn"
 }
 
 # 공통 user_id 속성 정의
@@ -524,11 +527,14 @@ async def mcp_handler(request: Request):
         return JSONResponse({
             "jsonrpc": "2.0",
             "result": {
-                "protocolVersion": "2024-11-05",
+                "protocolVersion": "2025-11-25",
                 "capabilities": {
-                    "tools": {}
+                    "tools": {
+                        "listChanged": False
+                    }
                 },
-                "serverInfo": SERVER_INFO
+                "serverInfo": SERVER_INFO,
+                "instructions": "챗노트는 카카오톡 AI 메모 서비스입니다. URL이나 텍스트를 보내면 자동으로 분류하여 저장합니다. '오늘 정리', '맛집 검색' 등으로 메모를 조회할 수 있습니다."
             },
             "id": req_id
         })
