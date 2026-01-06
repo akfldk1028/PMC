@@ -382,8 +382,9 @@ def get_category_emoji(category: str) -> str:
 |------|-----|
 | 서버 이름 | 챗노트 (ChatNote) |
 | 설명 | 카카오톡에 던진 메모를 AI가 자동 정리하고, 언제든 검색할 수 있게 해주는 스마트 메모 비서 |
-| 엔드포인트 | https://memomate.vercel.app/mcp |
+| 엔드포인트 | https://memomate-mcp.vercel.app/mcp |
 | 인증 방식 | OAuth (PlayMCP Gateway) |
+| 채널 URL | http://pf.kakao.com/_IHxegn |
 
 ### MCP 식별자 (Prefix)
 - 추천: `memo` 또는 `memomate`

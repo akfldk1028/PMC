@@ -1,9 +1,20 @@
 # 챗노트 (ChatNote) - AI 핸드오프 문서
 
+> 📌 채널 URL: http://pf.kakao.com/_IHxegn
+> 봇 ID: 6957875684dcee6380090caa
+
 ## 즉시 이해해야 할 핵심 정보
 
 ### 프로젝트 개요
 **카카오톡 AI 메모 앱** - 사용자가 카카오톡으로 메모를 저장/검색/정리하는 서비스
+
+### 채널 정보
+| 항목 | 값 |
+|------|-----|
+| 채널명 | 챗노트 |
+| 검색용 아이디 | 챗노트 |
+| 채널 URL | http://pf.kakao.com/_IHxegn |
+| 채팅 URL | http://pf.kakao.com/_IHxegn/chat |
 
 ### 배포 URL
 | 엔드포인트 | URL |
@@ -15,8 +26,8 @@
 ### 테스트/관리 링크
 | 용도 | URL |
 |------|-----|
-| 카카오톡 채팅 테스트 | https://pf.kakao.com/_lwxfgn/chat |
-| 챗봇 관리자센터 | https://chatbot.kakao.com/bot/6957875684dcee6380090caa |
+| 카카오톡 채팅 테스트 | http://pf.kakao.com/_IHxegn/chat |
+| 챗봇 관리자센터 | https://chatbot.kakao.com/ |
 | PlayMCP (MCP 테스트) | https://playmcp.kakao.com |
 | Vercel 대시보드 | https://vercel.com/dashboard |
 

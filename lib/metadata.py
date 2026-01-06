@@ -80,6 +80,16 @@ PLATFORM_DOMAINS = {
     "linkedin": ["linkedin.com"],
     "reddit": ["reddit.com"],
     "wikipedia": ["wikipedia.org"],
+    # 정부/공공
+    "gov": ["go.kr", "korea.kr"],
+    "hometax": ["hometax.go.kr"],
+    "wetax": ["wetax.go.kr"],
+    "gov24": ["gov.kr"],
+    # 금융
+    "bank": ["kbstar.com", "shinhan.com", "wooribank.com", "hanabank.com", "ibk.co.kr"],
+    "card": ["card.kbcard.com", "shinhancard.com", "wooricard.com"],
+    # 뉴스
+    "news": ["news.naver.com", "news.daum.net", "chosun.com", "donga.com", "joins.com", "hani.co.kr", "khan.co.kr"],
 }
 
 # URL 패턴 (더 정교한 패턴)
@@ -119,6 +129,49 @@ def normalize_image_url(image_url: str, base_url: str) -> Optional[str]:
     # 상대 경로 → 절대 경로 변환
     from urllib.parse import urljoin
     return urljoin(base_url, image_url)
+
+
+def get_favicon_url(url: str) -> str:
+    """사이트 favicon URL 생성 (Google Favicon API 사용)"""
+    try:
+        parsed = urlparse(url)
+        domain = parsed.netloc
+        # Google Favicon API - 안정적이고 대부분 사이트 지원
+        return f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
+    except Exception:
+        return ""
+
+
+def get_default_thumbnail(platform: str) -> Optional[str]:
+    """플랫폼별 기본 썸네일 URL (공개 아이콘)"""
+    # 플랫폼별 기본 이미지 (CDN에서 가져옴)
+    DEFAULT_THUMBNAILS = {
+        "youtube": "https://www.youtube.com/img/desktop/yt_1200.png",
+        "instagram": "https://www.instagram.com/static/images/ico/favicon-192.png/68d99ba29cc8.png",
+        "github": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+        "naver_blog": "https://ssl.pstatic.net/static/blog/favicon/blog_favicon_192.png",
+        "velog": "https://velog.velcdn.com/images/velog/velog.png",
+        "notion": "https://www.notion.so/images/logo-ios.png",
+        "spotify": "https://open.spotifycdn.com/cdn/images/favicon32.8e66b099.png",
+    }
+    return DEFAULT_THUMBNAILS.get(platform)
+
+
+def get_domain_name(url: str) -> str:
+    """URL에서 깔끔한 도메인명 추출 (www 제거, 대문자화)"""
+    try:
+        parsed = urlparse(url)
+        domain = parsed.netloc.lower()
+        # www. 제거
+        if domain.startswith("www."):
+            domain = domain[4:]
+        # 첫 글자 대문자화 (hometax.go.kr → Hometax.go.kr)
+        parts = domain.split(".")
+        if parts:
+            parts[0] = parts[0].capitalize()
+        return ".".join(parts)
+    except Exception:
+        return ""
 
 
 def extract_urls(text: str) -> list:
@@ -188,12 +241,30 @@ async def extract_metadata(url: str) -> dict:
                 if not image_url or "ytimg.com" not in image_url:
                     image_url = youtube_thumbnail
 
+            # 이미지가 없으면 폴백: 플랫폼 기본 → favicon
+            final_image = image_url
+            if not final_image:
+                final_image = get_default_thumbnail(platform)
+            if not final_image:
+                final_image = get_favicon_url(url)
+
+            # 제목 폴백: OG → title 태그 → 도메인명
+            title = _get_content(og_title) or _get_text(title_tag)
+            if not title:
+                title = get_domain_name(url)
+
+            # 사이트명 폴백: OG → 도메인명
+            site_name = _get_content(og_site_name)
+            if not site_name:
+                site_name = get_domain_name(url)
+
             # 결과 구성
             result = {
-                "title": _get_content(og_title) or _get_text(title_tag) or "",
+                "title": title or "",
                 "description": _get_content(og_description) or _get_content(desc_tag) or "",
-                "image": image_url or "",
-                "site_name": _get_content(og_site_name) or "",
+                "image": final_image or "",
+                "thumbnail": final_image or "",  # 호환성: image와 thumbnail 둘 다
+                "site_name": site_name or "",
                 "url": url,
                 "type": platform
             }
@@ -206,13 +277,22 @@ async def extract_metadata(url: str) -> dict:
 
     except Exception as e:
         print(f"Metadata extraction error: {e}")
-        # 실패해도 YouTube 썸네일은 보장
+        # 실패해도 썸네일은 최대한 보장
+        fallback_image = None
+        if youtube_thumbnail:
+            fallback_image = youtube_thumbnail
+        elif platform:
+            fallback_image = get_default_thumbnail(platform)
+        if not fallback_image:
+            fallback_image = get_favicon_url(url)
+
         result = {
             "url": url,
-            "type": platform
+            "type": platform,
+            "image": fallback_image or "",
+            "thumbnail": fallback_image or ""
         }
-        if youtube_thumbnail:
-            result["image"] = youtube_thumbnail
+        if youtube_id:
             result["video_id"] = youtube_id
         return result
 

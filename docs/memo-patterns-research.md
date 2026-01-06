@@ -1,9 +1,7 @@
 <div align="center">
 
-# 💬 ChatNote
-## https://chatbot.kakao.com/bot/6957875684dcee6380090caa/action/69578798f37f4f7df329aa92 
-
-
+# 💬 챗노트 (ChatNote)
+## 채널 URL: http://pf.kakao.com/_IHxegn
 
 ### AI-Powered Smart Memo for KakaoTalk
 
@@ -343,7 +341,7 @@ async def extract_og_data(url: str) -> dict:
 
 <div align="center">
 
-## 💬 ChatNote
+## 💬 챗노트 (ChatNote)
 
 **카카오톡 메모의 새로운 경험**
 
