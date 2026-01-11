@@ -142,6 +142,17 @@ def fast_rule_classify(message: str) -> dict | None:
         "지난달 정리": {"intent": "summary", "confidence": 1.0, "period": "last_month"},
         "전체 보여줘": {"intent": "summary", "confidence": 1.0, "period": "all"},
         "전체보여줘": {"intent": "summary", "confidence": 1.0, "period": "all"},
+        # 요약 (AI 인사이트)
+        "오늘 요약": {"intent": "ai_summary", "confidence": 1.0, "period": "today"},
+        "오늘요약": {"intent": "ai_summary", "confidence": 1.0, "period": "today"},
+        "어제 요약": {"intent": "ai_summary", "confidence": 1.0, "period": "yesterday"},
+        "이번주 요약": {"intent": "ai_summary", "confidence": 1.0, "period": "week"},
+        "이번 주 요약": {"intent": "ai_summary", "confidence": 1.0, "period": "week"},
+        "지난주 요약": {"intent": "ai_summary", "confidence": 1.0, "period": "last_week"},
+        "이번달 요약": {"intent": "ai_summary", "confidence": 1.0, "period": "month"},
+        "지난달 요약": {"intent": "ai_summary", "confidence": 1.0, "period": "last_month"},
+        "전체 요약": {"intent": "ai_summary", "confidence": 1.0, "period": "all"},
+        "요약": {"intent": "ai_summary", "confidence": 1.0, "period": "today"},
         # 카테고리별 정리
         "영상 정리": {"intent": "summary", "confidence": 1.0, "category": "영상"},
         "음악 정리": {"intent": "summary", "confidence": 1.0, "category": "음악"},
@@ -172,6 +183,28 @@ def fast_rule_classify(message: str) -> dict | None:
         "전체보기 건강": {"intent": "summary", "confidence": 1.0, "category": "건강", "show_all": True},
         "전체보기 읽을거리": {"intent": "summary", "confidence": 1.0, "category": "읽을거리", "show_all": True},
         "전체보기 기타": {"intent": "summary", "confidence": 1.0, "category": "기타", "show_all": True},
+        # 삭제 (기간별/카테고리별) - QuickReplies용
+        "메모 삭제": {"intent": "delete", "confidence": 1.0},  # 삭제 옵션 보여주기
+        "삭제": {"intent": "delete", "confidence": 1.0},  # 삭제 옵션 보여주기
+        "오늘 메모 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "오늘"},
+        "오늘메모삭제": {"intent": "delete", "confidence": 1.0, "keyword": "오늘"},
+        "어제 메모 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "어제"},
+        "어제메모삭제": {"intent": "delete", "confidence": 1.0, "keyword": "어제"},
+        "이번주 메모 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "이번주"},
+        "이번 주 메모 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "이번주"},
+        "지난주 메모 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "지난주"},
+        "이번달 메모 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "이번달"},
+        "전체 메모 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "전체"},
+        "전체메모삭제": {"intent": "delete", "confidence": 1.0, "keyword": "전체"},
+        # 카테고리별 삭제
+        "영상 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "영상"},
+        "음악 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "음악"},
+        "맛집 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "맛집"},
+        "쇼핑 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "쇼핑"},
+        "여행 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "여행"},
+        "할일 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "할일"},
+        "학습 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "학습"},
+        "기타 삭제": {"intent": "delete", "confidence": 1.0, "keyword": "기타"},
     }
 
     if msg in EXACT_MATCHES:

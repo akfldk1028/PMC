@@ -204,26 +204,80 @@ async def service_save_memo(
 
 
 async def service_delete_memo(user_id: str, memo_id: str = None, keyword: str = None) -> dict:
-    """메모 삭제 서비스"""
+    """메모 삭제 서비스 - 기간별/카테고리별/키워드별 지원"""
 
-    # 키워드로 검색해서 삭제
+    # 기간 키워드 매핑
+    PERIOD_KEYWORDS = {
+        "오늘": "today",
+        "어제": "yesterday",
+        "이번주": "week",
+        "이번 주": "week",
+        "지난주": "last_week",
+        "지난 주": "last_week",
+        "이번달": "month",
+        "이번 달": "month",
+        "지난달": "last_month",
+        "지난 달": "last_month",
+        "전체": "all"
+    }
+
+    # 카테고리 목록
+    CATEGORIES = ["영상", "음악", "맛집", "쇼핑", "여행", "학습", "할일", "아이디어", "링크", "기타"]
+
+    memos_to_delete = []
+    delete_type = "single"  # single, period, category, keyword
+
     if keyword and not memo_id:
-        memos = await search_memos(user_id, keyword, limit=1)
-        if not memos:
-            return {"success": False, "error": f"'{keyword}' 관련 메모가 없습니다."}
-        memo = memos[0]
-        memo_id = memo.get("id")
-    else:
+        # 1. 기간 키워드 확인
+        if keyword in PERIOD_KEYWORDS:
+            period = PERIOD_KEYWORDS[keyword]
+            memos_to_delete = await get_memos_by_period(user_id, period)
+            delete_type = "period"
+            if not memos_to_delete:
+                period_name = keyword
+                return {"success": False, "error": f"{period_name} 메모가 없습니다."}
+
+        # 2. 카테고리 키워드 확인
+        elif keyword in CATEGORIES:
+            memos_to_delete = await get_memos_by_category(user_id, keyword, limit=100)
+            delete_type = "category"
+            if not memos_to_delete:
+                return {"success": False, "error": f"'{keyword}' 카테고리 메모가 없습니다."}
+
+        # 3. 일반 키워드 검색
+        else:
+            memos_to_delete = await search_memos(user_id, keyword, limit=10)
+            delete_type = "keyword"
+            if not memos_to_delete:
+                return {"success": False, "error": f"'{keyword}' 관련 메모가 없습니다."}
+
+    elif memo_id:
+        # 특정 ID로 삭제
         memo = await get_memo_by_id(user_id, memo_id)
         if not memo:
             return {"success": False, "error": "메모를 찾을 수 없습니다."}
+        memos_to_delete = [memo]
+    else:
+        return {"success": False, "error": "삭제할 대상을 지정해주세요."}
 
-    success = await db_delete_memo(user_id, memo_id)
+    # 삭제 실행
+    deleted_count = 0
+    deleted_memos = []
+    for memo in memos_to_delete:
+        mid = memo.get("id")
+        if mid:
+            success = await db_delete_memo(user_id, mid)
+            if success:
+                deleted_count += 1
+                deleted_memos.append(memo)
 
-    if success:
+    if deleted_count > 0:
         return {
             "success": True,
-            "deleted_memo": memo
+            "deleted_count": deleted_count,
+            "delete_type": delete_type,
+            "keyword": keyword,
+            "deleted_memos": deleted_memos[:5]  # 최대 5개만 반환
         }
     else:
         return {"success": False, "error": "삭제 실패"}

@@ -1,0 +1,705 @@
+{
+  "통계 조회": {
+    "status": "PASS",
+    "data": {
+      "total": 0,
+      "today": 0,
+      "week": 0,
+      "month": 0,
+      "by_category": {}
+    }
+  },
+  "최근 메모 20개": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "카테고리:영상": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "카테고리:맛집": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "카테고리:쇼핑": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "카테고리:할일": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "카테고리:아이디어": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "카테고리:여행": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "카테고리:음악": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "카테고리:학습": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "카테고리:건강": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "카테고리:읽을거리": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:유튜브": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:블로그": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:개발": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:AI": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:Python": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:MCP": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:카카오": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:추천": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:할인": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:운동": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:Netflix": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:쿠팡": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:커피": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:독서": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "검색:React": {
+    "status": "PASS",
+    "data": {
+      "count": 0
+    }
+  },
+  "기간:오늘": {
+    "status": "PASS",
+    "data": {
+      "count": 0,
+      "categories": {}
+    }
+  },
+  "기간:어제": {
+    "status": "PASS",
+    "data": {
+      "count": 0,
+      "categories": {}
+    }
+  },
+  "기간:이번주": {
+    "status": "PASS",
+    "data": {
+      "count": 0,
+      "categories": {}
+    }
+  },
+  "기간:지난주": {
+    "status": "PASS",
+    "data": {
+      "count": 0,
+      "categories": {}
+    }
+  },
+  "기간:이번달": {
+    "status": "PASS",
+    "data": {
+      "count": 0,
+      "categories": {}
+    }
+  },
+  "기간:지난달": {
+    "status": "PASS",
+    "data": {
+      "count": 0,
+      "categories": {}
+    }
+  },
+  "요약:영상": {
+    "status": "PASS",
+    "data": {
+      "total": 0,
+      "url": 0,
+      "text": 0
+    }
+  },
+  "요약:맛집": {
+    "status": "PASS",
+    "data": {
+      "total": 0,
+      "url": 0,
+      "text": 0
+    }
+  },
+  "요약:쇼핑": {
+    "status": "PASS",
+    "data": {
+      "total": 0,
+      "url": 0,
+      "text": 0
+    }
+  },
+  "요약:할일": {
+    "status": "PASS",
+    "data": {
+      "total": 0,
+      "url": 0,
+      "text": 0
+    }
+  },
+  "요약:아이디어": {
+    "status": "PASS",
+    "data": {
+      "total": 0,
+      "url": 0,
+      "text": 0
+    }
+  },
+  "요약:여행": {
+    "status": "PASS",
+    "data": {
+      "total": 0,
+      "url": 0,
+      "text": 0
+    }
+  },
+  "요약:음악": {
+    "status": "PASS",
+    "data": {
+      "total": 0,
+      "url": 0,
+      "text": 0
+    }
+  },
+  "요약:학습": {
+    "status": "PASS",
+    "data": {
+      "total": 0,
+      "url": 0,
+      "text": 0
+    }
+  },
+  "요약:건강": {
+    "status": "PASS",
+    "data": {
+      "total": 0,
+      "url": 0,
+      "text": 0
+    }
+  },
+  "요약:읽을거리": {
+    "status": "PASS",
+    "data": {
+      "total": 0,
+      "url": 0,
+      "text": 0
+    }
+  },
+  "저장:https://youtube.com/": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "2773d378-4559-436b-bd3c-af437571a536",
+      "category": "영상",
+      "summary": "- YouTube",
+      "tags": [],
+      "memo_type": "url",
+      "url": "https://youtube.com/watch?v=test_ghi789",
+      "reminder_at": null,
+      "metadata": {
+        "title": "- YouTube",
+        "description": "YouTube에서 마음에 드는 동영상과 음악을 감상하고, 직접 만든 콘텐츠를 업로드하여 친구, 가족뿐 아니라 전 세계 사람들과 콘텐츠를 공유할 수 있습니다.",
+        "image": "https://i.ytimg.com/vi/test_ghi789/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/test_ghi789/hqdefault.jpg",
+        "site_name": "Youtube.com",
+        "url": "https://youtube.com/watch?v=test_ghi789",
+        "type": "youtube",
+        "video_id": "test_ghi789"
+      }
+    }
+  },
+  "저장:https://coupang.com/": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "1802078d-cad9-486c-b6f0-bdf77b02056c",
+      "category": "쇼핑",
+      "summary": "Access Denied",
+      "tags": [],
+      "memo_type": "url",
+      "url": "https://coupang.com/vp/products/test12345",
+      "reminder_at": null,
+      "metadata": {
+        "title": "Access Denied",
+        "description": "",
+        "image": "https://www.google.com/s2/favicons?domain=coupang.com&sz=128",
+        "thumbnail": "https://www.google.com/s2/favicons?domain=coupang.com&sz=128",
+        "site_name": "Coupang.com",
+        "url": "https://coupang.com/vp/products/test12345",
+        "type": "coupang"
+      }
+    }
+  },
+  "저장:https://amazon.com/d": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "92699849-6b79-4b61-8c3f-6dc382114202",
+      "category": "쇼핑",
+      "summary": "Page Not Found",
+      "tags": [],
+      "memo_type": "url",
+      "url": "https://amazon.com/dp/testabc",
+      "reminder_at": null,
+      "metadata": {
+        "title": "Page Not Found",
+        "description": "",
+        "image": "https://www.google.com/s2/favicons?domain=amazon.com&sz=128",
+        "thumbnail": "https://www.google.com/s2/favicons?domain=amazon.com&sz=128",
+        "site_name": "Amazon.com",
+        "url": "https://amazon.com/dp/testabc",
+        "type": "amazon"
+      }
+    }
+  },
+  "저장:맛집 강남 스시 오마카세 추천": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "dfbc5900-994a-48ff-bf69-90d64009bbe4",
+      "category": "맛집",
+      "summary": "맛집 강남 스시 오마카세 추천",
+      "tags": [],
+      "memo_type": "text",
+      "url": null,
+      "reminder_at": null,
+      "metadata": {}
+    }
+  },
+  "저장:맛집 판교 점심 맛집 리스트": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "1b2e5e36-4f36-441e-a84e-d9e158eaf43a",
+      "category": "맛집",
+      "summary": "맛집 판교 점심 맛집 리스트",
+      "tags": [],
+      "memo_type": "text",
+      "url": null,
+      "reminder_at": null,
+      "metadata": {}
+    }
+  },
+  "저장:할일 1월 15일까지 MCP 서버 개": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "6dc5476e-2b35-4a3c-a01c-c28676fcae5c",
+      "category": "할일",
+      "summary": "할일 MCP 서버 개발 완료 (월요일 오전 9시)",
+      "tags": [],
+      "memo_type": "text",
+      "url": null,
+      "reminder_at": "2026-01-12 09:00:00",
+      "metadata": {}
+    }
+  },
+  "저장:할일 금요일 팀 회의 준비": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "1aa0911a-5050-4445-83e0-75a83edac627",
+      "category": "할일",
+      "summary": "할일 팀 회의 준비 (오늘 오전 9시)",
+      "tags": [],
+      "memo_type": "text",
+      "url": null,
+      "reminder_at": "2026-01-09 09:00:00",
+      "metadata": {}
+    }
+  },
+  "저장:할일 PlayMCP 공모전 응모하기": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "da62916e-fc61-4edd-a783-3e5c4db37ec9",
+      "category": "할일",
+      "summary": "할일 PlayMCP 공모전 응모하기 (모레 오전 9시)",
+      "tags": [],
+      "memo_type": "text",
+      "url": null,
+      "reminder_at": "2026-01-11 09:00:00",
+      "metadata": {}
+    }
+  },
+  "저장:할일 포트폴리오 업데이트하기": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "a15030bd-8247-44f2-8e12-f18180c9899c",
+      "category": "할일",
+      "summary": "할일 포트폴리오 업데이트하기 (모레 오전 9시)",
+      "tags": [],
+      "memo_type": "text",
+      "url": null,
+      "reminder_at": "2026-01-11 09:00:00",
+      "metadata": {}
+    }
+  },
+  "저장:아이디어 AI 메모 자동태깅 아이디어": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "76aa06e5-e580-41cc-90f7-2667fe875988",
+      "category": "아이디어",
+      "summary": "아이디어 AI 메모 자동태깅 아이디어",
+      "tags": [],
+      "memo_type": "text",
+      "url": null,
+      "reminder_at": null,
+      "metadata": {}
+    }
+  },
+  "저장:아이디어 사이드프로젝트 AI일기장": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "f41f9ac6-9e26-41fa-8fb5-eb0956f07c62",
+      "category": "아이디어",
+      "summary": "아이디어 사이드프로젝트 AI일기장",
+      "tags": [],
+      "memo_type": "text",
+      "url": null,
+      "reminder_at": null,
+      "metadata": {}
+    }
+  },
+  "저장:여행 2월 제주도 여행 계획": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "a4e9e2a0-88a6-463e-a957-f7429d6ca07a",
+      "category": "여행",
+      "summary": "여행 2월 제주도 여행 계획",
+      "tags": [],
+      "memo_type": "text",
+      "url": null,
+      "reminder_at": null,
+      "metadata": {}
+    }
+  },
+  "저장:학습 MCP 공식문서 정독": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "3a4e5972-54ff-4ebb-be83-0055f0c3fa0d",
+      "category": "학습",
+      "summary": "학습 MCP 공식문서 정독",
+      "tags": [],
+      "memo_type": "text",
+      "url": null,
+      "reminder_at": null,
+      "metadata": {}
+    }
+  },
+  "저장:학습 클린코드 1-5장 요약": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "3174204e-98dd-448c-a828-089bf8ed50fe",
+      "category": "학습",
+      "summary": "학습 클린코드 1-5장 요약",
+      "tags": [],
+      "memo_type": "text",
+      "url": null,
+      "reminder_at": null,
+      "metadata": {}
+    }
+  },
+  "저장:건강 매일 아침 30분 런닝": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "23db2993-fa58-4776-bc92-9cf12e5117be",
+      "category": "건강",
+      "summary": "건강 매일 아침 30분 런닝",
+      "tags": [],
+      "memo_type": "text",
+      "url": null,
+      "reminder_at": null,
+      "metadata": {}
+    }
+  },
+  "저장:건강 홈트 루틴 상체하체코어": {
+    "status": "PASS",
+    "data": {
+      "success": true,
+      "memo_id": "0872bb05-8578-4e20-846d-3dc66208184a",
+      "category": "건강",
+      "summary": "건강 홈트 루틴 상체하체코어",
+      "tags": [],
+      "memo_type": "text",
+      "url": null,
+      "reminder_at": null,
+      "metadata": {}
+    }
+  },
+  "태그수정:할일 MCP 서버 개발 완료": {
+    "status": "PASS",
+    "data": {
+      "memo_id": "6dc5476e-2b35-4a3c-a01c-c28676fcae5c",
+      "tags": [
+        "업무",
+        "긴급",
+        "중요",
+        "deadline"
+      ]
+    }
+  },
+  "태그수정:할일 팀 회의 준비 (오늘 ": {
+    "status": "PASS",
+    "data": {
+      "memo_id": "1aa0911a-5050-4445-83e0-75a83edac627",
+      "tags": [
+        "업무",
+        "긴급",
+        "중요",
+        "deadline"
+      ]
+    }
+  },
+  "태그수정:할일 PlayMCP 공모전 ": {
+    "status": "PASS",
+    "data": {
+      "memo_id": "da62916e-fc61-4edd-a783-3e5c4db37ec9",
+      "tags": [
+        "업무",
+        "긴급",
+        "중요",
+        "deadline"
+      ]
+    }
+  },
+  "태그수정:할일 포트폴리오 업데이트하기": {
+    "status": "PASS",
+    "data": {
+      "memo_id": "a15030bd-8247-44f2-8e12-f18180c9899c",
+      "tags": [
+        "업무",
+        "긴급",
+        "중요",
+        "deadline"
+      ]
+    }
+  },
+  "삭제:테스트": {
+    "status": "PASS",
+    "data": {
+      "deleted": 0
+    }
+  },
+  "삭제:임시": {
+    "status": "PASS",
+    "data": {
+      "deleted": 0
+    }
+  },
+  "삭제:temp": {
+    "status": "PASS",
+    "data": {
+      "deleted": 0
+    }
+  },
+  "삭제:sample": {
+    "status": "PASS",
+    "data": {
+      "deleted": 0
+    }
+  },
+  "삭제:삭제예정": {
+    "status": "PASS",
+    "data": {
+      "deleted": 0
+    }
+  },
+  "삭제:draft": {
+    "status": "PASS",
+    "data": {
+      "deleted": 0
+    }
+  },
+  "변경 후 통계": {
+    "status": "PASS",
+    "data": {
+      "total": 18,
+      "today": 18,
+      "week": 18,
+      "month": 18,
+      "by_category": {
+        "영상": 3,
+        "맛집": 2,
+        "쇼핑": 2,
+        "여행": 1,
+        "할일": 4,
+        "아이디어": 2,
+        "학습": 2,
+        "건강": 2
+      }
+    }
+  },
+  "최근 10개 확인": {
+    "status": "PASS",
+    "data": {
+      "count": 10
+    }
+  },
+  "종합 리포트": {
+    "status": "PASS",
+    "data": {
+      "total": 18,
+      "url_count": 5,
+      "text_count": 13,
+      "top_categories": {
+        "할일": 4,
+        "영상": 3,
+        "건강": 2,
+        "학습": 2,
+        "아이디어": 2
+      },
+      "top_keywords": [
+        [
+          "할일",
+          4
+        ],
+        [
+          "오전",
+          4
+        ],
+        [
+          "9시)",
+          4
+        ],
+        [
+          "아이디어",
+          3
+        ],
+        [
+          "맛집",
+          3
+        ],
+        [
+          "YouTube",
+          3
+        ],
+        [
+          "건강",
+          2
+        ],
+        [
+          "학습",
+          2
+        ],
+        [
+          "MCP",
+          2
+        ],
+        [
+          "여행",
+          2
+        ]
+      ]
+    }
+  }
+}

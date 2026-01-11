@@ -138,19 +138,6 @@ def create_carousel(cards: list, quick_replies: list = None) -> dict:
     return response
 
 
-def get_default_quick_replies() -> list:
-    """기본 QuickReplies - 홈 화면용"""
-    return [
-        {"label": "오늘", "action": "message", "messageText": "오늘 정리"},
-        {"label": "이번주", "action": "message", "messageText": "이번주 정리"},
-        {"label": "영상", "action": "message", "messageText": "영상 정리"},
-        {"label": "맛집", "action": "message", "messageText": "맛집 정리"},
-        {"label": "삭제", "action": "message", "messageText": "메모 삭제"},
-        {"label": "통계", "action": "message", "messageText": "통계"},
-        {"label": "도움말", "action": "message", "messageText": "도움말"}
-    ]
-
-
 async def get_personalized_quick_replies(user_id: str) -> list:
     """개인화된 QuickReplies - 사용자 상위 2개 카테고리 동적 반영 (← 홈 포함)"""
     # 사용자 상위 2개 카테고리 가져오기
@@ -169,11 +156,10 @@ async def get_personalized_quick_replies(user_id: str) -> list:
     return [
         {"label": "← 홈", "action": "message", "messageText": "홈"},
         {"label": "오늘", "action": "message", "messageText": "오늘 정리"},
-        {"label": "이번주", "action": "message", "messageText": "이번주 정리"},
+        {"label": "요약", "action": "message", "messageText": "오늘 요약"},
     ] + dynamic_buttons + [
         {"label": "삭제", "action": "message", "messageText": "메모 삭제"},
-        {"label": "통계", "action": "message", "messageText": "통계"},
-        {"label": "도움말", "action": "message", "messageText": "도움말"}
+        {"label": "통계", "action": "message", "messageText": "통계"}
     ]
 
 
@@ -214,15 +200,30 @@ def get_sub_page_quick_replies() -> list:
     ]
 
 
-def get_delete_quick_replies() -> list:
-    """삭제 옵션 QuickReplies - 기간별/카테고리별 삭제"""
-    return [
+async def get_personalized_delete_quick_replies(user_id: str) -> list:
+    """개인화된 삭제 옵션 QuickReplies - 사용자 상위 카테고리 반영"""
+    # 사용자 상위 2개 카테고리 가져오기
+    top_cats = await get_user_top_categories(user_id, limit=2)
+
+    # 기본 기간별 삭제 버튼
+    buttons = [
         {"label": "← 홈", "action": "message", "messageText": "홈"},
         {"label": "오늘 삭제", "action": "message", "messageText": "오늘 메모 삭제"},
-        {"label": "영상 삭제", "action": "message", "messageText": "영상 삭제"},
-        {"label": "맛집 삭제", "action": "message", "messageText": "맛집 삭제"},
-        {"label": "전체 삭제", "action": "message", "messageText": "전체 메모 삭제"}
+        {"label": "어제 삭제", "action": "message", "messageText": "어제 메모 삭제"},
     ]
+
+    # 동적 카테고리 삭제 버튼 (사용자 상위 카테고리)
+    for cat in top_cats:
+        buttons.append({
+            "label": f"{cat} 삭제",
+            "action": "message",
+            "messageText": f"{cat} 삭제"
+        })
+
+    # 전체 삭제는 마지막에
+    buttons.append({"label": "전체 삭제", "action": "message", "messageText": "전체 메모 삭제"})
+
+    return buttons
 
 
 def format_relative_time(iso_time: str) -> str:
@@ -310,6 +311,11 @@ async def skill_handler(request: Request):
             category = intent_result.get("category")
             show_all = intent_result.get("show_all", False)
             return await handle_summary(user["id"], period, category, show_all)
+
+        elif intent == "ai_summary":
+            step = "handle_ai_summary"
+            period = intent_result.get("period", "today")
+            return await handle_ai_summary(user["id"], period)
 
         elif intent == "stats":
             step = "handle_stats"
@@ -471,6 +477,80 @@ async def handle_summary(user_id: str, period: str, category: str = None, show_a
     return JSONResponse(response)
 
 
+async def handle_ai_summary(user_id: str, period: str):
+    """AI 요약 처리 - 메모들을 분석해서 자연어 인사이트 제공"""
+    result = await service_get_summary(user_id, period)
+    memos = result.get("memos", [])
+    period_name = result.get("period_name", "오늘")
+    total_count = len(memos)
+
+    sub_qr = get_sub_page_quick_replies()
+
+    if not memos:
+        return JSONResponse(create_simple_response(
+            f"{period_name} 저장된 메모가 없습니다.\n\n메모를 저장하면 요약해드릴게요!",
+            quick_replies=sub_qr
+        ))
+
+    # 카테고리별 집계
+    category_counts = {}
+    url_count = 0
+    text_count = 0
+
+    for memo in memos:
+        cat = memo.get("category", "기타")
+        category_counts[cat] = category_counts.get(cat, 0) + 1
+        if memo.get("url"):
+            url_count += 1
+        else:
+            text_count += 1
+
+    # 상위 카테고리 정렬
+    sorted_cats = sorted(category_counts.items(), key=lambda x: x[1], reverse=True)
+
+    # 자연어 요약 생성
+    summary_lines = [f"{period_name} {total_count}건 저장"]
+
+    # 카테고리별 요약
+    cat_parts = []
+    for cat, count in sorted_cats[:3]:
+        cat_parts.append(f"{cat} {count}개")
+
+    if cat_parts:
+        summary_lines.append(" · ".join(cat_parts))
+
+    # 링크 vs 텍스트 비율
+    if url_count > 0 and text_count > 0:
+        summary_lines.append(f"(링크 {url_count}건, 텍스트 {text_count}건)")
+    elif url_count > 0:
+        summary_lines.append(f"(모두 링크 저장)")
+    elif text_count > 0:
+        summary_lines.append(f"(모두 텍스트 메모)")
+
+    # 인사이트 추가
+    if sorted_cats:
+        top_cat = sorted_cats[0][0]
+        top_count = sorted_cats[0][1]
+        percentage = round(top_count / total_count * 100)
+        if percentage >= 50:
+            summary_lines.append(f"\n{top_cat} 관련 메모가 {percentage}%를 차지해요")
+
+    summary_text = "\n".join(summary_lines)
+
+    # QuickReplies에 상세 보기 옵션 추가
+    detail_qr = [
+        {"label": "← 홈", "action": "message", "messageText": "홈"},
+        {"label": f"{period_name} 정리", "action": "message", "messageText": f"{period_name.replace(' ', '')} 정리"},
+        {"label": "통계", "action": "message", "messageText": "통계"},
+    ]
+    # 상위 카테고리 버튼 추가
+    if sorted_cats:
+        top_cat = sorted_cats[0][0]
+        detail_qr.append({"label": f"{top_cat} 정리", "action": "message", "messageText": f"{top_cat} 정리"})
+
+    return JSONResponse(create_simple_response(summary_text, quick_replies=detail_qr))
+
+
 async def handle_search(user_id: str, keyword: str):
     """검색 처리 - 카드 형식으로 모던하게 표시"""
     sub_qr = get_sub_page_quick_replies()
@@ -566,13 +646,13 @@ async def handle_search(user_id: str, keyword: str):
 
 
 async def handle_delete(user_id: str, keyword: str = "", memo_id: str = ""):
-    """삭제 처리 - BasicCard로 모던하게"""
+    """삭제 처리 - 기간별/카테고리별/키워드별 지원"""
     sub_qr = get_sub_page_quick_replies()
-    delete_qr = get_delete_quick_replies()
+    delete_qr = await get_personalized_delete_quick_replies(user_id)
 
     if not keyword and not memo_id:
         return JSONResponse(create_simple_response(
-            "어떤 메모를 삭제할까요?",
+            "어떤 메모를 삭제할까요?\n\n기간별 또는 카테고리별로 삭제할 수 있어요.",
             quick_replies=delete_qr
         ))
 
@@ -588,14 +668,34 @@ async def handle_delete(user_id: str, keyword: str = "", memo_id: str = ""):
             quick_replies=sub_qr
         ))
 
-    memo = result.get("deleted_memo", {})
-    cat = memo.get("category", "기타")
-    summary = memo.get("summary", "")[:40]
+    # 새로운 응답 형식 처리
+    deleted_count = result.get("deleted_count", 0)
+    delete_type = result.get("delete_type", "single")
+    deleted_memos = result.get("deleted_memos", [])
+
+    # 삭제 타입별 메시지
+    if delete_type == "period":
+        period_name = result.get("keyword", "")
+        title = f"{period_name} 메모 삭제 완료"
+        desc = f"{deleted_count}개의 메모가 삭제되었습니다."
+    elif delete_type == "category":
+        cat_name = result.get("keyword", "")
+        title = f"{cat_name} 메모 삭제 완료"
+        desc = f"{deleted_count}개의 메모가 삭제되었습니다."
+    elif deleted_count == 1 and deleted_memos:
+        memo = deleted_memos[0]
+        cat = memo.get("category", "기타")
+        summary = memo.get("summary", "")[:40]
+        title = "삭제 완료"
+        desc = f"[{cat}] {summary}"
+    else:
+        title = "삭제 완료"
+        desc = f"{deleted_count}개의 메모가 삭제되었습니다."
 
     # TextCard - 이미지 없이 깔끔하게
     return JSONResponse(create_text_card(
-        title="삭제 완료",
-        description=f"[{cat}] {summary}",
+        title=title,
+        description=desc,
         quick_replies=sub_qr
     ))
 
@@ -786,8 +886,9 @@ def handle_help():
 · URL → 플랫폼별 자동 분류 (유튜브→영상)
 · "내일 3시 회의" → 리마인더 설정
 
-메모 정리
+메모 정리/요약
 오늘 정리 / 이번주 정리
+오늘 요약 / 이번주 요약 (인사이트)
 영상 정리 / 맛집 정리
 
 검색·삭제
@@ -801,6 +902,7 @@ def handle_help():
         quick_replies=[
             {"label": "오늘", "action": "message", "messageText": "오늘 정리"},
             {"label": "이번주", "action": "message", "messageText": "이번주 정리"},
+            {"label": "요약", "action": "message", "messageText": "오늘 요약"},
             {"label": "삭제", "action": "message", "messageText": "메모 삭제"},
             {"label": "통계", "action": "message", "messageText": "통계"},
             {"label": "리마인더", "action": "message", "messageText": "리마인더"}

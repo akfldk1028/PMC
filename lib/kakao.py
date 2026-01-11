@@ -7,6 +7,8 @@ import json
 import httpx
 from typing import Optional
 
+from .constants import get_category_emoji
+
 KAKAO_MEMO_API = "https://kapi.kakao.com/v2/api/talk/memo/default/send"
 KAKAO_TOKEN_API = "https://kauth.kakao.com/oauth/token"
 KAKAO_USER_API = "https://kapi.kakao.com/v2/user/me"
@@ -167,20 +169,6 @@ async def get_user_info(access_token: str) -> dict:
     except Exception as e:
         print(f"User info error: {e}")
         return {"error": str(e)}
-
-
-def get_category_emoji(category: str) -> str:
-    """카테고리 이모지"""
-    emojis = {
-        "영상": "📺",
-        "맛집": "🍽️",
-        "쇼핑": "🛒",
-        "할일": "📅",
-        "아이디어": "💡",
-        "읽을거리": "📰",
-        "기타": "📌"
-    }
-    return emojis.get(category, "📌")
 
 
 def format_memo_message(analysis: dict) -> str:

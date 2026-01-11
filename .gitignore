@@ -34,3 +34,5 @@ Thumbs.db
 .vercel
 nul
 .playwright-mcp
+
+.env*.local
